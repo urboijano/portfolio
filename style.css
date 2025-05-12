@@ -1,0 +1,290 @@
+
+:root {
+  --dark: #0a0a0a;
+  --accent: #8b0000;
+  --text: #ffffff;
+  --secondary: #333333;
+  --gradient: linear-gradient(45deg, var(--accent), #000);
+}
+
+@keyframes glow {
+  0% { text-shadow: 0 0 10px var(--accent); }
+  50% { text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent); }
+  100% { text-shadow: 0 0 10px var(--accent); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--dark);
+  color: var(--text);
+  font-family: 'Metal Mania', cursive;
+  line-height: 1.6;
+}
+
+header {
+  background: rgba(0, 0, 0, 0.9);
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-family: 'Metal Mania', cursive;
+  font-size: 1.2rem;
+}
+
+nav a:hover {
+  color: var(--accent);
+}
+
+section {
+  padding: 5rem 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background: url('https://images.unsplash.com/photo-1533156430273-611d74268e01?auto=format&fit=crop&q=80') center/cover no-repeat;
+  animation: fadeIn 1s ease-out;
+}
+
+section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 0;
+}
+
+section > * {
+  position: relative;
+  z-index: 1;
+}
+
+h1, h2 {
+  font-family: 'Metal Mania', cursive;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+h1 {
+  font-size: clamp(2rem, 8vw, 4rem);
+  animation: glow 2s infinite;
+  letter-spacing: 2px;
+}
+
+h2 {
+  font-size: 3rem;
+  color: var(--accent);
+}
+
+.project-categories,
+.service-categories {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.category-btn {
+  padding: 0.8rem 1.5rem;
+  background: transparent;
+  border: 2px solid var(--accent);
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Metal Mania', cursive;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+}
+
+.category-btn:hover, .category-btn.active {
+  background: var(--accent);
+  color: var(--text);
+  box-shadow: 0 0 15px rgba(139, 0, 0, 0.5);
+}
+
+.project-grid, .service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.project, .service {
+  background: rgba(51, 51, 51, 0.8);
+  padding: 2rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(139, 0, 0, 0.2);
+}
+
+.project:hover, .service:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(139, 0, 0, 0.3);
+  border-color: var(--accent);
+}
+
+.service {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .project-grid, .service-grid {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  
+  section {
+    padding: 3rem 1rem;
+  }
+  
+  nav {
+    padding: 0.5rem;
+  }
+  
+  .project, .service {
+    margin: 0.5rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .project-grid, .service-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.skills-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 2rem;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.skill {
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  padding: 1.5rem;
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 15px rgba(139, 0, 0, 0.3),
+              inset 0 0 10px rgba(139, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.skill::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(139, 0, 0, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: metalShine 3s infinite;
+}
+
+@keyframes metalShine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
+}
+
+.skill h4 {
+  color: var(--accent);
+  margin-bottom: 1rem;
+  font-family: 'Metal Mania', cursive;
+}
+
+.skill ul {
+  list-style-type: none;
+}
+
+.skill ul li {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  text-shadow: 0 0 5px rgba(139, 0, 0, 0.8);
+  letter-spacing: 1px;
+}
+
+.skill ul li::before {
+  content: '⚔️';
+  position: absolute;
+  left: 0;
+}
+
+.price {
+  font-size: 2rem;
+  color: var(--accent);
+  margin: 1rem 0;
+}
+
+ul {
+  list-style-position: inside;
+}
+
+footer {
+  text-align: center;
+  padding: 2rem;
+  background: var(--secondary);
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+  
+  nav {
+    flex-direction: column;
+    align-items: center;
+  }
+}

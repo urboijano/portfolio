@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Cris Adrian Aquino - Portfolio</title>
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#services">Services</a>
+    </nav>
+  </header>
+
+  <section id="home">
+    <h1>CRIS ADRIAN AQUINO</h1>
+    <p id="typewriter"></p>
+  </section>
+
+  <section id="about">
+    <h2>About Me</h2>
+    <p style="text-align: center; max-width: 800px; margin: 0 auto;">I'm a passionate BSIT student specializing in Network Security, with a deep love for metal and black metal music. Currently exploring the world of web development, I bring a unique blend of technical knowledge and creative design inspired by the dark aesthetics of metal culture.</p>
+    
+    <div class="skills-container">
+      <h3>Technical Skills</h3>
+      <div class="skills-grid">
+        <div class="skill">
+          <h4>Web Development</h4>
+          <ul>
+            <li>HTML5 & CSS3</li>
+            <li>JavaScript</li>
+            <li>Responsive Design</li>
+            <li>Web Animation</li>
+          </ul>
+        </div>
+        <div class="skill">
+          <h4>Network Security</h4>
+          <ul>
+            <li>Network Protocols</li>
+            <li>Security Analysis</li>
+            <li>Cybersecurity Basics</li>
+            <li>System Administration</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <h2>Projects</h2>
+    <div class="project-categories">
+      <button class="category-btn active" data-category="all">All Projects</button>
+      <button class="category-btn" data-category="web">Web Development</button>
+      <button class="category-btn" data-category="security">Security</button>
+    </div>
+    <div class="project-grid">
+      <div class="project" data-category="web">
+        <h3>Portfolio Website</h3>
+        <p>Personal portfolio with dark theme and metal aesthetics</p>
+      </div>
+      <div class="project" data-category="web">
+        <h3>E-commerce Platform</h3>
+        <p>Custom online store with responsive design</p>
+      </div>
+      <div class="project" data-category="security">
+        <h3>Network Security Implementation</h3>
+        <p>Comprehensive network security setup for small businesses</p>
+      </div>
+      <div class="project" data-category="security">
+        <h3>Firewall Configuration</h3>
+        <p>Custom firewall rules and security policies</p>
+      </div>
+      <div class="project" data-category="security">
+        <h3>Security Audit</h3>
+        <p>Vulnerability assessment and penetration testing</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <h2>Commission Services</h2>
+    <div class="service-categories">
+      <button class="category-btn active" data-service-category="all">All Services</button>
+      <button class="category-btn" data-service-category="web">Web Development</button>
+      <button class="category-btn" data-service-category="security">Security</button>
+    </div>
+    <div class="service-grid">
+      <!-- Web Development Services -->
+      <div class="service" data-service-category="web">
+        <h3>Basic Website</h3>
+        <p class="price">₱10,000</p>
+        <ul>
+          <li>Single Page Website</li>
+          <li>Responsive Design</li>
+          <li>Basic Animations</li>
+          <li>Contact Form</li>
+        </ul>
+      </div>
+      <div class="service" data-service-category="web">
+        <h3>Standard Website</h3>
+        <p class="price">₱18,000</p>
+        <ul>
+          <li>Multi-page Website</li>
+          <li>Advanced Animations</li>
+          <li>Content Management</li>
+          <li>Social Media Integration</li>
+        </ul>
+      </div>
+      <div class="service" data-service-category="web">
+        <h3>Premium Website</h3>
+        <p class="price">₱30,000</p>
+        <ul>
+          <li>Custom Web Application</li>
+          <li>Advanced Functionality</li>
+          <li>Database Integration</li>
+          <li>3 Months Support</li>
+        </ul>
+      </div>
+      <!-- Security Services -->
+      <div class="service" data-service-category="security">
+        <h3>Basic Security Audit</h3>
+        <p class="price">₱10,000</p>
+        <ul>
+          <li>Vulnerability Assessment</li>
+          <li>Basic Security Report</li>
+          <li>Common Issues Check</li>
+          <li>Basic Recommendations</li>
+        </ul>
+      </div>
+      <div class="service" data-service-category="security">
+        <h3>Network Security Setup</h3>
+        <p class="price">₱20,000</p>
+        <ul>
+          <li>Firewall Configuration</li>
+          <li>Security Policies Setup</li>
+          <li>Access Control Implementation</li>
+          <li>Basic Monitoring Setup</li>
+        </ul>
+      </div>
+      <div class="service" data-service-category="security">
+        <h3>Advanced Security Package</h3>
+        <p class="price">₱35,000</p>
+        <ul>
+          <li>Complete Security Audit</li>
+          <li>Penetration Testing</li>
+          <li>Advanced Monitoring</li>
+          <li>6 Months Support</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
