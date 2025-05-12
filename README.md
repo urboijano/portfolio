@@ -41,7 +41,7 @@ I'm a BSIT student specializing in Network Security with a passion for metal mus
 - Interactive service categories
 
 ## 🚀 Live Demo
-[Visit the live portfolio](https://crisadrianaquino.github.io/portfolio)
+[Visit the live portfolio](https://urboijano.github.io/portfolio/)
 
 ## 📞 Contact
 For inquiries about web development or security services, please reach out through the portfolio contact section.
