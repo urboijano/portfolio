@@ -1,0 +1,15 @@
+# site assets only — everything below stays local
+design-demos/
+ITNS5_1790611166_2.pdf
+node_modules/
+package.json
+package-lock.json
+
+# unreferenced originals — don't publish
+images/*.jfif
+images/ojt-home.png
+certificates/*.pdf
+
+# temp/verification files
+_*.js
+_*.pdf
