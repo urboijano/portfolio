@@ -449,6 +449,39 @@ button.btn{appearance:none;-webkit-appearance:none;font-family:var(--sans);margi
 .socials a:hover{color:var(--accent)}
 /* section kickers - restored from index.html's original .section-label */
 .sec-kicker{font:500 12.5px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+
+/* ============================================================
+   ENTER GATE + MUSIC — sound is only allowed after a user
+   gesture, so the welcome screen doubles as that gesture.
+   ============================================================ */
+.gate{
+  position:fixed;inset:0;z-index:90;
+  background:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  padding:32px;text-align:center;
+}
+.gate[hidden]{display:none}
+.gate-in{max-width:560px}
+.gate-kicker{font:500 12.5px/1.5 var(--mono);letter-spacing:.2em;color:var(--accent);margin:0 0 22px}
+.gate-h{font-family:var(--serif);font-weight:300;font-size:clamp(34px,5vw,54px);line-height:1.12;margin:0 0 14px}
+.gate-p{font-size:16px;line-height:1.7;color:var(--ink-2);margin:0 auto 34px;max-width:42ch}
+.gate-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.gate-btns .btn{min-width:190px}
+.gate-note{font:400 12px/1.6 var(--mono);letter-spacing:.06em;color:var(--ink-3);margin:26px 0 0}
+#ytHost{position:fixed;width:1px;height:1px;opacity:.01;pointer-events:none;overflow:hidden;border:0}
+#ytHost iframe{width:1px;height:1px;border:0}
+.musbtn{
+  position:fixed;right:18px;bottom:18px;z-index:80;
+  display:inline-flex;align-items:center;gap:9px;
+  padding:10px 14px;border:1px solid var(--rule-2);background:var(--paper);color:var(--ink);
+  font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;
+  transition:background-color .16s ease,color .16s ease,border-color .16s ease;
+}
+.musbtn:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.musbtn .dot{width:7px;height:7px;background:var(--accent);border-radius:50%;flex:none}
+.musbtn.off .dot{background:transparent;border:1px solid currentColor}
+.musbtn[hidden]{display:none}
+@media(max-width:880px){.musbtn{right:12px;bottom:12px}}
 </style>
 </head>
 <body>
@@ -796,6 +829,25 @@ button.btn{appearance:none;-webkit-appearance:none;font-family:var(--sans);margi
     <p class="ft-m">Ars longa, vita brevis.</p>
   </div>
 </footer>
+
+<!-- ============================================================
+     ENTER GATE — the visitor chooses; music starts on their tap
+     ============================================================ -->
+<div class="gate" id="gate" aria-label="Welcome">
+  <div class="gate-in">
+    <p class="gate-kicker">CRIS ADRIAN AQUINO</p>
+    <h2 class="gate-h">Welcome in.</h2>
+    <p class="gate-p">This visit can open with music &#8212; Zayn&#8217;s &#8220;PILLOWTALK.&#8221; Browsers need one tap before sound is allowed.</p>
+    <div class="gate-btns">
+      <button class="btn btn-p" id="gateMusic" type="button">Enter with music</button>
+      <button class="btn btn-s" id="gateSilent" type="button">Enter silently</button>
+    </div>
+    <p class="gate-note">You can pause or restart the music any time with the button in the corner.</p>
+  </div>
+</div>
+
+<div id="ytHost" aria-hidden="true"></div>
+<button class="musbtn" id="musToggle" type="button" aria-pressed="false" hidden><span class="dot" aria-hidden="true"></span><span id="musLbl">Music</span></button>
 
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Project screenshot" hidden>
   <button class="lb-x" id="lbClose" type="button" aria-label="Close screenshot">
@@ -1226,6 +1278,52 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
         encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
     });
   }
+
+  /* ------------------------------------------------------------
+     MUSIC — Zayn "PILLOWTALK" via the official YouTube video.
+     Browsers block sound until a visitor gesture, so the entrance
+     gate doubles as that gesture; the player sits in a hidden
+     1px iframe that keeps playing while out of sight.
+     ------------------------------------------------------------ */
+  var YT_ID = "C_3d6GntKbk";
+  var gate = $("#gate");
+  var ytHost = document.getElementById("ytHost");
+  var musBtn = document.getElementById("musToggle");
+  var musLbl = document.getElementById("musLbl");
+  var playing = false;
+
+  function startMusic() {
+    ytHost.innerHTML = "";
+    var f = document.createElement("iframe");
+    f.title = "ZAYN \u2014 PILLOWTALK (Official Video)";
+    f.src = "https://www.youtube.com/embed/" + YT_ID +
+      "?autoplay=1&mute=0&playsinline=1&loop=1&playlist=" + YT_ID;
+    f.setAttribute("allow", "autoplay; encrypted-media");
+    ytHost.appendChild(f);
+    playing = true;
+    syncMusic();
+  }
+  function stopMusic() {
+    ytHost.innerHTML = ""; /* removing the iframe stops the audio */
+    playing = false;
+    syncMusic();
+  }
+  function syncMusic() {
+    musLbl.textContent = playing ? "Pause music" : "Play music";
+    musBtn.setAttribute("aria-pressed", playing ? "true" : "false");
+    musBtn.classList.toggle("off", !playing);
+  }
+
+  var enterGate = function (withMusic) {
+    gate.hidden = true;
+    if (withMusic) startMusic();
+    musBtn.hidden = false;
+  };
+  $("#gateMusic").addEventListener("click", function () { enterGate(true); });
+  $("#gateSilent").addEventListener("click", function () { enterGate(false); });
+  musBtn.addEventListener("click", function () {
+    if (playing) stopMusic(); else startMusic();
+  });
 })();
 
 </script>
