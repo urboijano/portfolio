@@ -13,3 +13,6 @@ certificates/*.pdf
 # temp/verification files
 _*.js
 _*.pdf
+
+.vercel
+.env*
