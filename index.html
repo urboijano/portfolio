@@ -1249,7 +1249,7 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
   var YT_ID = "C_3d6GntKbk";
   var ytPlayer = null;
   var unmuted = false;
-  var GESTURES = ["pointerdown", "touchstart", "mousedown", "keydown", "scroll"];
+  var GESTURES = ["pointerdown", "touchstart", "touchend", "mousedown", "keydown", "scroll"];
 
   window.onYouTubeIframeAPIReady = function () {
     ytPlayer = new YT.Player("ytHost", {
@@ -1259,8 +1259,12 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
         onReady: function () {
           ytPlayer.playVideo(); /* starts muted */
           tryUnmute();
-          setTimeout(tryUnmute, 600);
-          setTimeout(tryUnmute, 1500);
+          setTimeout(tryUnmute, 800);
+          setTimeout(tryUnmute, 2000);
+        },
+        onStateChange: function (e) {
+          /* PLAYING — switch the sound on as early as the browser allows */
+          if (e.data === 1 && !unmuted) tryUnmute();
         }
       }
     });
@@ -1270,14 +1274,21 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
   document.body.appendChild(yts);
 
   function tryUnmute() {
-    if (unmuted || !ytPlayer) return;
-    ytPlayer.unMute();
-    ytPlayer.playVideo();
+    if (unmuted || !ytPlayer || typeof ytPlayer.unMute !== "function") return;
+    try { ytPlayer.unMute(); ytPlayer.playVideo(); }
+    catch (e) { return; /* API not wired up yet — next attempt continues */ }
     setTimeout(function () {
-      try { unmuted = ytPlayer.isMuted() === false; }
-      catch (e) { /* API not ready yet — next attempt continues */ }
-      if (unmuted) dropGestures();
-    }, 200);
+      var st = -99, mut = true;
+      try {
+        st = ytPlayer.getPlayerState();
+        mut = ytPlayer.isMuted();
+      } catch (e) { return; }
+      /* Success requires BOTH facts: the video is genuinely playing AND
+         genuinely unmuted. While the video has not started yet (state -1)
+         isMuted() can already report false — treating that as success would
+         drop the gesture listeners while no sound exists, so we do not. */
+      if (st === 1 && mut === false) { unmuted = true; dropGestures(); }
+    }, 250);
   }
   function dropGestures() {
     GESTURES.forEach(function (ev) {
