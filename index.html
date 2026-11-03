@@ -276,9 +276,11 @@ h1{
 /* certificate rows: a specimen thumbnail beside the entry, opening in the
    same lightbox as the project shots. Swap the inline src for a real scan
    file (certificates/<name>.jpg) whenever one exists. */
-.rc-shot{display:grid;grid-template-columns:minmax(0,1fr) 196px;gap:0 34px;align-items:start}
-.rc-shot>*{grid-column:1}
-.rc-shot>.certshots{grid-column:2;grid-row:1/span 3;margin:0;grid-template-columns:minmax(0,1fr);gap:0}
+.rc-shot{display:grid;grid-template-columns:196px minmax(0,1fr);gap:0 34px;align-items:start}
+.rc-shot>*{grid-column:2}
+.rc-shot>.certshots{grid-column:1;grid-row:1/span 3;margin:0;grid-template-columns:minmax(0,1fr);gap:0}
+/* certificate sheets drop the numbered rail and use the full row width */
+#credentials .rows .row:has(.rc-shot){grid-template-columns:minmax(0,1fr)}
 /* certificate sheet is A4-landscape shaped, not the 16:10 project crop */
 .slot-in.ar-cert{aspect-ratio:420/297}
 /* portrait sheets (OpenLearn statements) keep their own shape */
@@ -387,6 +389,7 @@ textarea.fi{min-height:150px;resize:vertical}
 @media (max-width:900px){
   /* certificate specimen drops below its entry text */
   .rc-shot{grid-template-columns:minmax(0,1fr);gap:18px}
+  .rc-shot>*{grid-column:1}
   .rc-shot>.certshots{grid-column:1;grid-row:auto;max-width:300px}
 }
 @media (max-width:880px){
@@ -629,7 +632,6 @@ button.btn{appearance:none;-webkit-appearance:none;font-family:var(--sans);margi
         <p class="meta">Each certificate can be independently verified — links below open the issuing organization&#8217;s verification page or course record.</p>
         <div class="rows">
           <div class="row">
-            <div class="rm"><p class="idx">01</p></div>
             <div class="rc rc-shot">
               <h4 class="item-h sm">Ethical Hacker</h4>
               <p class="meta">Cisco Networking Academy &#183; September 2026</p>
@@ -645,7 +647,6 @@ button.btn{appearance:none;-webkit-appearance:none;font-family:var(--sans);margi
             </div>
           </div>
           <div class="row">
-            <div class="rm"><p class="idx">02</p></div>
             <div class="rc rc-shot">
               <h4 class="item-h sm">Microsoft Cybersecurity Course: Security, Compliance, and Identity Fundamentals</h4>
               <p class="meta">TESDA Online Program &#183; August 2026</p>
@@ -661,7 +662,6 @@ button.btn{appearance:none;-webkit-appearance:none;font-family:var(--sans);margi
             </div>
           </div>
           <div class="row">
-            <div class="rm"><p class="idx">03</p></div>
             <div class="rc rc-shot">
               <h4 class="item-h sm">Don't Get Hacked: Detect, Defend, and Secure Your Digital Life</h4>
               <p class="meta">DICT Region V &#183; Catanduanes Provincial Office &#183; August 2026</p>
@@ -677,7 +677,6 @@ button.btn{appearance:none;-webkit-appearance:none;font-family:var(--sans);margi
             </div>
           </div>
           <div class="row">
-            <div class="rm"><p class="idx">04</p></div>
             <div class="rc rc-shot">
               <h4 class="item-h sm">GICAST &#8212; Gamified Intelligent Cyber Aptitude and Skills Training</h4>
               <p class="meta">The Open University (OpenLearn) &#183; May 2025</p>
@@ -693,7 +692,6 @@ button.btn{appearance:none;-webkit-appearance:none;font-family:var(--sans);margi
             </div>
           </div>
           <div class="row">
-            <div class="rm"><p class="idx">05</p></div>
             <div class="rc rc-shot">
               <h4 class="item-h sm">AI Security Summit 2026: CxO Trust</h4>
               <p class="meta">Cloud Security Alliance &#183; August 2026</p>
