@@ -449,12 +449,6 @@ button.btn{appearance:none;-webkit-appearance:none;font-family:var(--sans);margi
 .socials a:hover{color:var(--accent)}
 /* section kickers - restored from index.html's original .section-label */
 .sec-kicker{font:500 12.5px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
-
-/* ============================================================
-   MUSIC — hidden 1px YouTube player out of the visitor's way
-   ============================================================ */
-#ytHost{position:fixed;left:0;top:0;width:1px;height:1px;opacity:.01;pointer-events:none;overflow:hidden;border:0}
-#ytHost iframe{width:1px;height:1px;border:0}
 </style>
 </head>
 <body>
@@ -803,12 +797,6 @@ button.btn{appearance:none;-webkit-appearance:none;font-family:var(--sans);margi
   </div>
 </footer>
 
-<!-- ============================================================
-     MUSIC — the official ZAYN "PILLOWTALK" video plays in this
-     invisible 1px host; see the script block at the bottom.
-     ============================================================ -->
-<div id="ytHost" aria-hidden="true"></div>
-
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Project screenshot" hidden>
   <button class="lb-x" id="lbClose" type="button" aria-label="Close screenshot">
     <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><path d="M1 1l16 16M17 1L1 17" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
@@ -879,20 +867,20 @@ const professionalSkills = [
 
 const projects = [
   {
-    title: "Commision — Canteen Food Ordering System",
-    role: "Full Stack Developer",
-    desc: "A real-time food ordering platform for school and university canteens. Students and faculty browse the menu by category, build a cart, place orders, and watch the order status move from Received to Preparing to Ready for Pick-Up, live over WebSockets. Key features: JWT auth with automatic refresh, role-based registration validated against a school ID, a REST API, an order audit trail, and a feedback and rating flow. I designed the data models, built the API and the real-time order flow, and set up Docker and a CI deploy pipeline.",
-    shots: ["images/commision-1.png", "images/commision-2.png"],
-    tech: ["Python", "Django", "JavaScript", "Bootstrap"],
-    link: "https://github.com/urboijano/Commision"
-  },
-  {
     title: "OJT Monitoring System — Capstone Project",
     role: "Backend Developer",
     desc: "A Django platform that digitizes the full On-the-Job Training lifecycle for Isabela Colleges, Inc.: program and application management, site assignments, webcam time-in/time-out verified by facial recognition (OpenCV LBPH), daily narrative reports, GPS- and IP-tagged clock-ins, and coordinator evaluation dashboards for three roles (Admin, Coordinator, Student). As the backend developer I designed the PostgreSQL data model across five app modules, built the Django REST Framework API with role-based token auth, login-attempt tracking and rate limiting, an OTP password-reset flow, Swagger/OpenAPI documentation, automated timeout detection with coordinator flag review via Celery/Redis queues, in-app and email notifications, system activity logs, and CSV attendance exports \u2014 deployed with Docker and live in production.",
     shots: ["images/ojt-landing-full.png", "images/ojt-login.png"],
     tech: ["Python", "Django", "Django REST Framework", "PostgreSQL", "OpenCV", "Celery", "Redis", "Docker"],
     live: "https://isabelacolleges-ojtms.online/"
+  },
+  {
+    title: "Commision — Canteen Food Ordering System",
+    role: "Full Stack Developer",
+    desc: "A real-time food ordering platform for school and university canteens. Students and faculty browse the menu by category, build a cart, place orders, and watch the order status move from Received to Preparing to Ready for Pick-Up, live over WebSockets. Key features: JWT auth with automatic refresh, role-based registration validated against a school ID, a REST API, an order audit trail, and a feedback and rating flow. I designed the data models, built the API and the real-time order flow, and set up Docker and a CI deploy pipeline.",
+    shots: ["images/commision-1.png", "images/commision-2.png"],
+    tech: ["Python", "Django", "JavaScript", "Bootstrap"],
+    link: "https://github.com/urboijano/Commision"
   }
 ];
 
@@ -1238,66 +1226,6 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
         encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
     });
   }
-
-  /* ------------------------------------------------------------
-     MUSIC — Zayn "PILLOWTALK" via the official YouTube video.
-     Muted autoplay is always allowed, so the song starts the
-     instant the page loads; the sound is switched on by the
-     visitor's first tap, click, scroll, or key press anywhere
-     (and immediately if the browser permits full autoplay).
-     ------------------------------------------------------------ */
-  var YT_ID = "C_3d6GntKbk";
-  var ytPlayer = null;
-  var unmuted = false;
-  var GESTURES = ["pointerdown", "touchstart", "touchend", "mousedown", "keydown", "scroll"];
-
-  window.onYouTubeIframeAPIReady = function () {
-    ytPlayer = new YT.Player("ytHost", {
-      videoId: YT_ID,
-      playerVars: { autoplay: 1, mute: 1, playsinline: 1, loop: 1, playlist: YT_ID },
-      events: {
-        onReady: function () {
-          ytPlayer.playVideo(); /* starts muted */
-          tryUnmute();
-          setTimeout(tryUnmute, 800);
-          setTimeout(tryUnmute, 2000);
-        },
-        onStateChange: function (e) {
-          /* PLAYING — switch the sound on as early as the browser allows */
-          if (e.data === 1 && !unmuted) tryUnmute();
-        }
-      }
-    });
-  };
-  var yts = document.createElement("script");
-  yts.src = "https://www.youtube.com/iframe_api";
-  document.body.appendChild(yts);
-
-  function tryUnmute() {
-    if (unmuted || !ytPlayer || typeof ytPlayer.unMute !== "function") return;
-    try { ytPlayer.unMute(); ytPlayer.playVideo(); }
-    catch (e) { return; /* API not wired up yet — next attempt continues */ }
-    setTimeout(function () {
-      var st = -99, mut = true;
-      try {
-        st = ytPlayer.getPlayerState();
-        mut = ytPlayer.isMuted();
-      } catch (e) { return; }
-      /* Success requires BOTH facts: the video is genuinely playing AND
-         genuinely unmuted. While the video has not started yet (state -1)
-         isMuted() can already report false — treating that as success would
-         drop the gesture listeners while no sound exists, so we do not. */
-      if (st === 1 && mut === false) { unmuted = true; dropGestures(); }
-    }, 250);
-  }
-  function dropGestures() {
-    GESTURES.forEach(function (ev) {
-      document.removeEventListener(ev, tryUnmute);
-    });
-  }
-  GESTURES.forEach(function (ev) {
-    document.addEventListener(ev, tryUnmute, { passive: true });
-  });
 })();
 
 </script>
