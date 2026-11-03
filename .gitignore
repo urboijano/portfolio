@@ -7,6 +7,7 @@ package-lock.json
 
 # unreferenced originals — don't publish
 images/*.jfif
+resume2x2.jfif
 images/ojt-home.png
 certificates/*.pdf
 
