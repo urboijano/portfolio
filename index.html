@@ -831,6 +831,7 @@ const PROFILE = {
   facebook:   "https://www.facebook.com/adrianswrld/",
 
   resume:     "",   // e.g. "resume/CrisAdrianAquino_Resume.pdf"
+  portfolio:  "",   // e.g. "https://your-name.vercel.app" - shown as a globe line in the résumé PDF
   formspree:  "xyekqlel",   // e.g. "abc123XYZ" from formspree.io
 
   university: "Isabela State University - Cauayan Campus",   // e.g. "University of the Philippines"
@@ -1324,6 +1325,9 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
       return ic ? { ic: ic, v: dd } : dt.replace(/\s+/g, '\u00A0') + ': ' + dd;
     }).filter(Boolean);
 
+    /* portfolio website: globe line at the end of the contact block */
+    if (PROFILE.portfolio) keep.push({ ic: 'web', v: PROFILE.portfolio });
+
     if (eye) B.push({ t: 'eye', v: eye });
     B.push({ t: 'name', v: name });
     if (role) B.push({ t: 'role', v: role });
@@ -1373,15 +1377,19 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
       });
     }
 
-    /* experience tightened: freelance and volunteer committee entries stay
-       on the website; the internship gets two crisp one-line bullets */
+    /* experience: the freelance entry and internship both get two crisp
+       one-line bullets so the section reads like a résumé */
     var exp = document.getElementById('experience');
     if (exp) {
       B.push({ t: 'sect', v: t(exp.querySelector('.vt')) });
       all(exp, '.rows .row').forEach(function (c) {
         var r = parseRow(c);
-        if (/technical committee|freelance/i.test(r.title)) return;
-        if (/it intern/i.test(r.title)) {
+        if (/freelance/i.test(r.title)) {
+          r.bul = [
+            'Built responsive websites for small local businesses.',
+            'Set up domains and hosting; delivered 3 client sites on time.'
+          ];
+        } else if (/it intern/i.test(r.title)) {
           r.bul = [
             'Assisted with site maintenance, feature testing and bug documentation.',
             'Built an internal request-tracking page now used by the team.'
@@ -1531,8 +1539,8 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
       var h = titL.length * LH.sub +
               (metL.length ? metH + 3 : 0) +
               (bodL.length ? bodL.length * LH.body + 4 : 0) +
-              (bulL.length ? bulL.length * LH.body + o.bul.length * 2 : 0) +
-              chH + 11;
+              (bulL.length ? bulL.length * LH.body + o.bul.length : 0) +
+              chH + 4;
       var leftH = labL.length * LH.lbl + (badL.length ? 3 + badL.length * LH.tag : 0);
       need(Math.max(h, leftH, 22));
 
@@ -1555,13 +1563,13 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
         cur.push({ t: 'text', s: L.s, f: F.body, x: CX + 14, y: y });
         y += LH.body;
       });
-      if (bulL.length) y += o.bul.length * 2;
+      if (bulL.length) y += o.bul.length;
       chRows.forEach(function (r, i) {
         if (i) y += 4;
         r.forEach(function (c) { cur.push({ t: 'chip', s: c.s, f: F.tag, x: CX + c.x, w: c.w, y: y }); });
         if (r.length) y += 15;
       });
-      y += 11;
+      y += 4;
     }
 
     m.blocks.forEach(function (b) {
@@ -1624,18 +1632,18 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
         };
         var mH = flowMeta(null, mY) - mY;
         need(mH);
-        y = flowMeta(cur, mY) + 8;
+        y = flowMeta(cur, mY) + 6;
         break;
       }
 
       case 'hrule':
-        need(16); rule(RULE2, ML, CW, .7); y += 15; break;
+        need(16); rule(RULE2, ML, CW, .7); y += 13; break;
 
       case 'sect':
         need(38);
         emit(String(b.v).toUpperCase(), F.head, ML, CW, LH.head);
         rule(RULE2, ML, CW, .5, y - 3);
-        y += 10;
+        y += 8;
         break;
 
       case 'sub':
@@ -1778,6 +1786,17 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
         s += col(INK3) + '\n' + circle(mcx + 0.5, mcy, 3.6) + 'f\n' +
              'BT\n1 1 1 rg\n/F4 6.6 Tf\n0 Tc\n' +
              n(mcx - 0.55) + ' ' + n(PH - o.y - 6.53) + ' Td\n(f) Tj\nET\n';
+      } else if (o.ic === 'web') {
+        /* globe: stroked circle + equator line + meridian ellipse */
+        var gx = mcx + 0.4, gy = mcy, rxM = 1.55, ryM = 3.2,
+            kxM = Math.round(rxM * 0.5523 * 100) / 100,
+            kyM = Math.round(ryM * 0.5523 * 100) / 100;
+        s += stroke(INK3) + '\n0.55 w\n' +
+             circle(gx, gy, 3.3) + '\nS\n' +
+             n(gx - 3.3) + ' ' + n(gy) + ' m\n' + n(gx + 3.3) + ' ' + n(gy) + ' l\nS\n' +
+             n(gx - rxM) + ' ' + n(gy) + ' m\n' +
+             n(gx - rxM) + ' ' + n(gy + kyM) + ' ' + n(gx + rxM) + ' ' + n(gy + kyM) + ' ' + n(gx + rxM) + ' ' + n(gy) + ' c\n' +
+             n(gx + rxM) + ' ' + n(gy - kyM) + ' ' + n(gx - rxM) + ' ' + n(gy - kyM) + ' ' + n(gx - rxM) + ' ' + n(gy) + ' c\nS\n';
       }
     }
     return s;
