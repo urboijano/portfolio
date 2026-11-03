@@ -861,7 +861,6 @@ const projects = [
     role: "Backend Developer",
     desc: "A Django platform that digitizes the full On-the-Job Training lifecycle for Isabela Colleges, Inc.: program and application management, site assignments, webcam time-in/time-out verified by facial recognition (OpenCV LBPH), daily narrative reports, GPS- and IP-tagged clock-ins, and coordinator evaluation dashboards for three roles (Admin, Coordinator, Student). As the backend developer I designed the PostgreSQL data model across five app modules, built the Django REST Framework API with role-based token auth, login-attempt tracking and rate limiting, an OTP password-reset flow, Swagger/OpenAPI documentation, automated timeout detection with coordinator flag review via Celery/Redis queues, in-app and email notifications, system activity logs, and CSV attendance exports \u2014 deployed with Docker and live in production.",
     shots: ["images/ojt-landing-full.png", "images/ojt-login.png"],
-    tech: ["Python", "Django", "Django REST Framework", "PostgreSQL", "OpenCV", "Celery", "Redis", "Docker"],
     live: "https://isabelacolleges-ojtms.online/"
   },
   {
@@ -974,7 +973,7 @@ document.getElementById("projectRows").innerHTML = projects.map((p, n) => {
       <h3 class="item-h">${esc(p.title)}</h3>
       <p class="kicker">${esc(p.role)}</p>
       <p>${esc(p.desc)}</p>
-      <ul class="chips">${p.tech.map(t => '<li class="chip">' + logoHTML(t) + esc(t) + '</li>').join('')}</ul>${link}${shots}
+      ${(p.tech || []).length ? '<ul class="chips">' + p.tech.map(t => '<li class="chip">' + logoHTML(t) + esc(t) + '</li>').join('') + '</ul>' : ''}${link}${shots}
     </div>
   </div>`;
 }).join('');
