@@ -830,7 +830,7 @@ const PROFILE = {
   facebook:   "https://www.facebook.com/adrianswrld/",
 
   resume:     "",   // e.g. "resume/CrisAdrianAquino_Resume.pdf"
-  portfolio:  "",   // e.g. "https://your-name.vercel.app" - shown as a globe line in the résumé PDF
+  portfolio:  "https://crisadrianaquino.online",   // shown as a globe line in the résumé PDF
   formspree:  "xyekqlel",   // e.g. "abc123XYZ" from formspree.io
 
   university: "Isabela State University - Cauayan Campus",   // e.g. "University of the Philippines"
@@ -1324,7 +1324,7 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
     }).filter(Boolean);
 
     /* portfolio website: globe line at the end of the contact block */
-    if (PROFILE.portfolio) keep.push({ ic: 'web', v: PROFILE.portfolio });
+    if (PROFILE.portfolio) keep.push({ ic: 'web', v: String(PROFILE.portfolio).replace(/^https?:\/\/(?:www\.)?/, '') });
 
     if (eye) B.push({ t: 'eye', v: eye });
     B.push({ t: 'name', v: name });
@@ -1718,6 +1718,107 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
            n(cx - r) + ' ' + n(cy + k) + ' ' + n(cx - k) + ' ' + n(cy + r) + ' ' + n(cx) + ' ' + n(cy + r) + ' c\n';
   }
 
+  /* Pull the "d" out of one of the LOGOS base64 SVG data URIs, so the tiny
+     meta glyphs in the résumé are the REAL brand marks (the very vectors
+     the website shows) rather than approximations. */
+  function iconD(key) {
+    var d = '', u = (typeof LOGOS !== 'undefined' && LOGOS[key]) || '';
+    if (u && u.indexOf(';base64,') > -1) {
+      try {
+        var svg = atob(u.replace(/^.*;base64,/, ''));
+        var m = svg.match(/ d="([^"]+)"/);
+        if (m) d = m[1];
+      } catch (e) { d = ''; }
+    }
+    return d;
+  }
+
+  /* SVG path → PDF operators.  Supports the slice of the path grammar the
+     brand marks use — M/L/H/V/C/S/Q/Z absolute and relative, implicit
+     repeats — and maps a 24×24 viewBox centred on (cx, cy) at viewBox
+     height `h` in the bottom-up PDF system.  Arcs (A/a), which none of the
+     current marks uses, fall back to a straight line with a warning. */
+  function svgPathPdf(d, cx, cy, h) {
+    var tk = String(d).match(/[MmLlHhVvCcSsQqTtAaZz]|-?(?:\d*\.\d+|\d+)(?:e[-+]?\d+)?/g) || [],
+        k = h / 24, left = cx - k * 12, top = cy + k * 12,
+        px = 0, py = 0, msx = 0, msy = 0, c2x = 0, c2y = 0,
+        cmd = null, i = 0, out = '';
+    function X(x) { return left + k * x; }
+    function Y(y) { return top - k * y; }
+    function N() { return parseFloat(tk[i++]); }
+    var END = { M: 2, L: 2, H: 1, V: 1, C: 6, S: 4, Q: 4, T: 2, A: 7, Z: 0 };
+    while (i < tk.length) {
+      var g = tk[i];
+      if (/^[A-Za-z]$/.test(g)) { cmd = g; i++; continue; }
+      if (!cmd) { i++; continue; }
+      var a = cmd.toUpperCase(), rel = a !== cmd, v = [];
+      for (var j = 0; j < END[a]; j++) v.push(N());
+      switch (a) {
+      case 'M':
+        px = rel ? px + v[0] : v[0]; py = rel ? py + v[1] : v[1];
+        msx = px; msy = py;
+        out += n(X(px)) + ' ' + n(Y(py)) + ' m\n';
+        cmd = rel ? 'l' : 'L';      /* further pairs are implicit linetos */
+        break;
+      case 'L':
+        px = rel ? px + v[0] : v[0]; py = rel ? py + v[1] : v[1];
+        out += n(X(px)) + ' ' + n(Y(py)) + ' l\n';
+        break;
+      case 'H':
+        px = rel ? px + v[0] : v[0];
+        out += n(X(px)) + ' ' + n(Y(py)) + ' l\n';
+        break;
+      case 'V':
+        py = rel ? py + v[0] : v[0];
+        out += n(X(px)) + ' ' + n(Y(py)) + ' l\n';
+        break;
+      case 'C':
+        var x1 = rel ? px + v[0] : v[0], y1 = rel ? py + v[1] : v[1],
+            x2 = rel ? px + v[2] : v[2], y2 = rel ? py + v[3] : v[3],
+            ex = rel ? px + v[4] : v[4], ey = rel ? py + v[5] : v[5];
+        out += n(X(x1)) + ' ' + n(Y(y1)) + ' ' + n(X(x2)) + ' ' + n(Y(y2)) + ' ' +
+               n(X(ex)) + ' ' + n(Y(ey)) + ' c\n';
+        c2x = x2; c2y = y2; px = ex; py = ey;
+        break;
+      case 'S':
+        var fx = rel ? px + v[0] : v[0], fy = rel ? py + v[1] : v[1],
+            sx2 = rel ? px + v[2] : v[2], sy2 = rel ? py + v[3] : v[3],
+            x1s = 2 * px - c2x, y1s = 2 * py - c2y;
+        out += n(X(x1s)) + ' ' + n(Y(y1s)) + ' ' + n(X(fx)) + ' ' + n(Y(fy)) + ' ' +
+               n(X(sx2)) + ' ' + n(Y(sy2)) + ' c\n';
+        c2x = fx; c2y = fy; px = sx2; py = sy2;
+        break;
+      case 'Q':
+        var qx = rel ? px + v[0] : v[0], qy = rel ? py + v[1] : v[1],
+            tx = rel ? px + v[2] : v[2], ty = rel ? py + v[3] : v[3];
+        /* quadratic → cubic de Casteljau */
+        out += n(X(px + (qx - px) * 2 / 3)) + ' ' + n(Y(py + (qy - py) * 2 / 3)) + ' ' +
+               n(X(tx + (qx - tx) * 2 / 3)) + ' ' + n(Y(ty + (qy - ty) * 2 / 3)) + ' ' +
+               n(X(tx)) + ' ' + n(Y(ty)) + ' c\n';
+        c2x = qx; c2y = qy; px = tx; py = ty;
+        break;
+      case 'T':
+        var txx = rel ? px + v[0] : v[0], tyy = rel ? py + v[1] : v[1],
+            qrx = 2 * px - c2x, qry = 2 * py - c2y;
+        out += n(X(px + (qrx - px) * 2 / 3)) + ' ' + n(Y(py + (qry - py) * 2 / 3)) + ' ' +
+               n(X(txx + (qrx - txx) * 2 / 3)) + ' ' + n(Y(tyy + (qry - tyy) * 2 / 3)) + ' ' +
+               n(X(txx)) + ' ' + n(Y(tyy)) + ' c\n';
+        c2x = qrx; c2y = qry; px = txx; py = tyy;
+        break;
+      case 'A':
+        var ax = rel ? px + v[5] : v[5], ay = rel ? py + v[6] : v[6];
+        out += n(X(ax)) + ' ' + n(Y(ay)) + ' l\n';
+        px = ax; py = ay;
+        break;
+      case 'Z':
+        out += 'h\n';
+        px = msx; py = msy;
+        break;
+      }
+    }
+    return out;
+  }
+
   function drawOps(o) {
     var s = '';
     if (o.t === 'rule') {
@@ -1769,6 +1870,13 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
              n(ex + ew / 2) + ' ' + n(eb + eh - 2.9) + ' l\n' +
              n(ex + ew) + ' ' + n(eb + eh) + ' l\nS\n';
       } else if (o.ic === 'git') {
+        /* the REAL octocat mark, vector-compiled straight out of the site's
+           own LOGOS.github SVG; the hand-drawn "ears + blob" below only
+           kicks in if the data URI fails to decode */
+        var gd = iconD('github');
+        if (gd) {
+          s += col(INK3) + '\n' + svgPathPdf(gd, mcx, mcy, 7.4) + '\nf\n';
+        } else {
         /* chunky ears drawn first so they fuse into the head silhouette */
         s += col(INK3) + '\n' +
              n(mcx - 3.0) + ' ' + n(mcy + 1.2) + ' m\n' +
@@ -1778,6 +1886,7 @@ document.querySelectorAll("img[data-logo]").forEach(img => {
              n(mcx + 3.2) + ' ' + n(mcy + 4.9) + ' l\n' +
              n(mcx + 0.9) + ' ' + n(mcy + 2.7) + ' l\nf\n' +
              circle(mcx, mcy, 3.5) + 'f\n';
+        }
       } else if (o.ic === 'fb') {
         /* circle with the f centered inside it (the old baseline put the
            glyph below the circle, white-on-white on the page) */
